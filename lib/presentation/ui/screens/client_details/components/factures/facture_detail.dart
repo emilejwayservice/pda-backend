@@ -1,0 +1,136 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:pda/core/extensions/extension_on_date.dart';
+import 'package:pda/core/extensions/extension_on_string.dart';
+import 'package:pda/domain/entities/details.dart';
+import 'package:pda/domain/entities/facture.dart';
+import 'package:pda/domain/entities/facture_details.dart';
+import 'package:pda/presentation/ui/components/info_item.dart';
+import 'package:pda/presentation/ui/components/my_app_bar.dart';
+
+import '../../../../../../domain/entities/Livraison.dart';
+
+
+
+
+class FactureDetailScreen extends StatelessWidget {
+  FactureEntity facture;
+
+  FactureDetailScreen({required this.facture});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: MyAppBar(
+        title: "Facture details",
+      ),
+      body: Column(
+        children: [
+          InfoItem(
+            name: "Date livraison",
+            value: facture.dateFacture?.formattedDateFr,
+          ),
+          InfoItem(
+            name: "total TTC",
+            value: facture.totalTTC?.toString()??"-",
+          ),
+          InfoItem(
+            name: "Montant restant",
+            value: facture.montantRestant?.toString()??"-",
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Statut",
+                  style: GoogleFonts.acme(
+                      color: Colors.black, fontSize: 17, fontWeight: FontWeight.bold),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
+                  decoration: BoxDecoration(
+                      color: facture.status?.color?.toColor,
+                      borderRadius: BorderRadius.circular(7)
+                  ),
+                  child: Text(facture.status?.status??"",style: GoogleFonts.aBeeZee(color:Colors.white,fontSize:15,fontWeight:FontWeight.bold),),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20,),
+          Expanded(
+              child:Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15)
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 15,),
+                    Text("Details",style: GoogleFonts.aBeeZee(fontWeight:FontWeight.bold,color:Colors.black,fontSize:18),),
+                    const SizedBox(height: 15,),
+                    Expanded(
+                      child: Padding(
+                        padding:const EdgeInsets.symmetric(horizontal: 15),
+                        child: ListView.builder(
+                            itemCount: facture.details?.length??0,
+                            itemBuilder: (context,index){
+                              FactureDetailEntity livraisonDetail=facture.details!.elementAt(index);
+                              return Container(
+                                margin: const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8)
+                                ),
+                                child: Column(
+                                  children: [
+                                    InfoItem(
+                                      name: "Article",
+                                      value: livraisonDetail.product?.labelle,
+                                    ),
+                                    InfoItem(
+                                      name: "Prix",
+                                      value: livraisonDetail.price?.toString()??"-",
+                                    ),
+                                    InfoItem(
+                                      name: "Total HT",
+                                      value: livraisonDetail.totalHt?.toString()??"-",
+                                    ),
+                                    InfoItem(
+                                      name: "Total TTC",
+                                      value: livraisonDetail.totalTTC?.toString()??"-",
+                                    ),
+                                    InfoItem(
+                                      name: "Total TVA",
+                                      value: livraisonDetail.totalTva?.toString()??"-",
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+          )
+        ],
+      ),
+    );
+  }
+}
+
+
+

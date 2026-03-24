@@ -1,0 +1,73 @@
+
+
+
+
+
+import 'package:pda/domain/entities/Livraison.dart';
+import 'package:pda/domain/entities/retour.dart';
+import 'package:pda/domain/entities/activity_client.dart';
+import 'package:pda/domain/entities/bank.dart';
+import 'package:pda/domain/entities/caisse.dart';
+import 'package:pda/domain/entities/chargement.dart';
+import 'package:pda/domain/entities/client.dart';
+import 'package:pda/domain/entities/client_reglement_req.dart';
+import 'package:pda/domain/entities/command.dart';
+import 'package:pda/domain/entities/entrepot.dart';
+import 'package:pda/domain/entities/facture.dart';
+import 'package:pda/domain/entities/livraison_command_req.dart';
+import 'package:pda/domain/entities/payment_mode.dart';
+import 'package:pda/domain/entities/product.dart';
+import 'package:pda/domain/entities/tva.dart';
+import 'package:pda/domain/entities/type_client.dart';
+
+import '../entities/company.dart';
+import '../entities/user.dart';
+
+abstract class Repository{
+
+  Future<UserEntity> login(String email,String password,int company);
+  Future<UserEntity> getCurrentUser();
+  Future<List<CompanyEntity>> getCompanies();
+  Future<List<ClientEntity>> getClients(int company);
+  Future<List<TypeClientEntity>> getTypesClients();
+  Future<void> addClient(ClientEntity clientEntity);
+  Future<List<EntrepotEntity>> getListEntropot({required int society,required int idType});
+  Future<List<ProductEntity>> getAllProductsByEntrepot(int idEntrepot);
+  Future<void> addChargement(ChargementEntity chargement);
+  Future<List<ChargementEntity>> getAllChargement(int entrepot);
+  Future<ClientEntity> getClient(int company,int client);
+  Future<List<ActivityClientEntity>> getClientActivities();
+  Future<List<ProductEntity>> getProductsByClient(int client);
+  Future<List<TvaEntity>> getTvas();
+  Future<void> addCommand(CommandEntity command);
+  Future<List<CommandEntity>> getCommands(int company);
+  Future<CommandEntity> getCommand(int id);
+  Future<CommandEntity> validerCommand(int id);
+  Future<CommandEntity> livrerCommand(LivComdReqEntity request);
+  Future<List<LivraisonEntity>> getAllLivraison(int company);
+  Future<LivraisonEntity> getSingleLivraison(int livraison);
+  Future<LivraisonEntity> validerLivraison(int livraison);
+  Future<List<PaymentModeEntity>> getPayments();
+  Future<List<CaisseEntity>> getCaisses();
+  Future<List<BankEntity>> getBanks();
+  Future<List<FactureEntity>> getFacturesNotPaid(int client,int company);
+  Future<void> addReglement(ClientRegReqEntity request);
+  Future<List<RetourEntity>> retours(int company);
+  Future<void> addRetour(RetourEntity retour);
+  Future<RetourEntity> getRetourDetails(int retour);
+  Future<List<EntrepotEntity>> getEntrepotsByUser();
+  Future<List<ProductEntity>> getProductsByEntrepot(int entrepot);
+  Future<CompanyEntity> getCompany(int companyId);
+  Future<LivraisonEntity> facturableLivraison(int liv);
+  Future<void> addLivraison(LivraisonEntity livraison);
+  Future<List<LivraisonEntity>> getLivraisonsByClient(int client,int company);
+  Future<RetourEntity> livrerRetour(int retourId);
+  Future<void> addCommandToLocal(CommandEntity command);
+  Future<void> addProductToLocal(ProductEntity product);
+  Future<List<LivraisonEntity>> getLivraisonByDate(int comany,String date);
+  Future<List<CommandEntity>> getCommandsNotSent();
+  Future<List<ProductEntity>> getProductsNotSent();
+  Future<int> getCountProductsNotSent();
+  Future<void> updateSentProducts();
+
+}
