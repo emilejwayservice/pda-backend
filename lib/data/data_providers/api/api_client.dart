@@ -928,8 +928,8 @@ class ApiClientIml extends ApiClient {
   Future<List<LivraisonModel>> getLivraisonsByDate(
       int company, String date) async {
     try {
-      var response = await _dio
-          .get("/livraisons/by-date/1", queryParameters: {"date": date});
+      var response = await _dio.get("/livraisons/by-date/$company",
+          queryParameters: {"date": date}); 
       List<LivraisonModel> livraisons = await (response.data as List)
           .map((e) => LivraisonModel.fromMap(e))
           .toList();

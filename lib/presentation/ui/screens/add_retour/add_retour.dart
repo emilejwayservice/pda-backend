@@ -209,6 +209,13 @@ class _AddRetourScreenState extends State<AddRetourScreen> {
   }
 
   Widget clientsSelector(AddRetourState state) {
+    final uniqueClients =
+        {for (var c in state.clients!) c.id: c}.values.toList();
+    final selectedId =
+        uniqueClients.any((c) => c.id == state.selectedClient?.id)
+            ? state.selectedClient?.id
+            : null;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
@@ -224,8 +231,8 @@ class _AddRetourScreenState extends State<AddRetourScreen> {
         menuMaxHeight: 400,
         underline: const SizedBox(),
         isExpanded: true,
-        value: state.selectedClient?.id,
-        items: state.clients!
+        value: selectedId,
+        items: uniqueClients
             .map((e) => DropdownMenuItem<int>(
                   value: e.id,
                   child: Text(
@@ -237,7 +244,7 @@ class _AddRetourScreenState extends State<AddRetourScreen> {
             .toList(),
         onChanged: (int? id) {
           if (id == null) return;
-          ClientEntity client = state.clients!.firstWhere((c) => c.id == id);
+          ClientEntity client = uniqueClients.firstWhere((c) => c.id == id);
           onClientChanged(client);
         },
       ),
@@ -245,42 +252,52 @@ class _AddRetourScreenState extends State<AddRetourScreen> {
   }
 
   Widget livraisonSelector(AddRetourState state) {
-    return (state.livraisons?.isNotEmpty ?? false)
-        ? Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: DropdownButton<int>(
-              hint: Text(
-                "Entrez livraison",
-                style: GoogleFonts.aBeeZee(
-                    fontWeight: FontWeight.w700, color: Colors.grey),
-              ),
-              menuMaxHeight: 400,
-              underline: const SizedBox(),
-              isExpanded: true,
-              value: state.selectedLivraison?.id,
-              items: state.livraisons!
-                  .map((e) => DropdownMenuItem<int>(
-                        value: e.id,
-                        child: Text(
-                          "${e.dateLaivraison?.formattedDateFr}",
-                          style: GoogleFonts.aBeeZee(
-                              color: Colors.black, fontWeight: FontWeight.w600),
-                        ),
-                      ))
-                  .toList(),
-              onChanged: (int? id) {
-                if (id == null) return;
-                LivraisonEntity livraison =
-                    state.livraisons!.firstWhere((l) => l.id == id);
-                onLivraisonChanged(livraison);
-              },
-            ),
-          )
-        : const SizedBox();
+    // Guard: return empty widget if livraisons is null or empty
+    if (state.livraisons == null || state.livraisons!.isEmpty) {
+      return const SizedBox();
+    }
+
+    final uniqueLivraisons =
+        {for (var l in state.livraisons!) l.id: l}.values.toList();
+    final selectedId =
+        uniqueLivraisons.any((l) => l.id == state.selectedLivraison?.id)
+            ? state.selectedLivraison?.id
+            : null;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: DropdownButton<int>(
+        hint: Text(
+          "Entrez livraison",
+          style: GoogleFonts.aBeeZee(
+              fontWeight: FontWeight.w700, color: Colors.grey),
+        ),
+        menuMaxHeight: 400,
+        underline: const SizedBox(),
+        isExpanded: true,
+        value: selectedId,
+        items: uniqueLivraisons
+            .map((e) => DropdownMenuItem<int>(
+                  value: e.id,
+                  child: Text(
+                    "${e.dateLaivraison?.formattedDateFr}",
+                    style: GoogleFonts.aBeeZee(
+                        color: Colors.black, fontWeight: FontWeight.w600),
+                  ),
+                ))
+            .toList(),
+        onChanged: (int? id) {
+          if (id == null) return;
+          LivraisonEntity livraison =
+              uniqueLivraisons.firstWhere((l) => l.id == id);
+          onLivraisonChanged(livraison);
+        },
+      ),
+    );
   }
 
   Widget _productsBody(AddRetourState state) {
@@ -361,6 +378,13 @@ class _AddRetourScreenState extends State<AddRetourScreen> {
           description: state.error, type: ToastificationType.warning);
     } else if (state.validerStatus == AppStatus.success) {
       showToast("Success", context);
+      _resetForm();
     } else if (state.validerStatus == AppStatus.error) {}
+  }
+
+  void _resetForm() {
+    causeController.clear();
+    formState.currentState?.reset();
+    BlocProvider.of<AddRetourBloc>(context).add(ResetForm());
   }
 }

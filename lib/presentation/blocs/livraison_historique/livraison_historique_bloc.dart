@@ -13,21 +13,29 @@ import 'package:pda/domain/repository/repository.dart';
 part 'livraison_historique_event.dart';
 part 'livraison_historique_state.dart';
 
-class LivraisonHistoriqueBloc extends Bloc<LivraisonHistoriqueEvent, LivraisonHistoriqueState> {
-  LivraisonHistoriqueBloc() : super(LivraisonHistoriqueState(selectedDate: DateTime.now())) {
+class LivraisonHistoriqueBloc
+    extends Bloc<LivraisonHistoriqueEvent, LivraisonHistoriqueState> {
+  LivraisonHistoriqueBloc()
+      : super(LivraisonHistoriqueState(selectedDate: DateTime.now())) {
     on<SelectedDate>(_onSelectDate);
   }
 
-  FutureOr<void> _onSelectDate(SelectedDate event, Emitter<LivraisonHistoriqueState> emit) async {
+  FutureOr<void> _onSelectDate(
+      SelectedDate event, Emitter<LivraisonHistoriqueState> emit) async {
     try {
-      emit(state.copyWith(fetchStatus: AppStatus.loading,selectedDate: event.date));
-      Repository repository=Dependencies.get<Repository>();
-      int company=Dependencies.get<SharedPrefService>().getValue(SharedPrefService.company, 0);
-      List<LivraisonEntity> livraisons=await repository.getLivraisonByDate(company, event.date.formattedDateEn);
-      emit(state.copyWith(fetchStatus: AppStatus.success,livraisons: livraisons));
-    }on NetworkConnectivityException catch(ex){
-      emit(state.copyWith(fetchStatus: AppStatus.error,isOffline: true));
-    }catch(ex){
+      emit(state.copyWith(
+          fetchStatus: AppStatus.loading, selectedDate: event.date));
+      Repository repository = Dependencies.get<Repository>();
+      int company = Dependencies.get<SharedPrefService>()
+          .getValue(SharedPrefService.company, 0);
+      print("🔍 [DEBUG] company value for commande = $company");
+      List<LivraisonEntity> livraisons = await repository.getLivraisonByDate(
+          company, event.date.formattedDateEn);
+      emit(state.copyWith(
+          fetchStatus: AppStatus.success, livraisons: livraisons));
+    } on NetworkConnectivityException catch (ex) {
+      emit(state.copyWith(fetchStatus: AppStatus.error, isOffline: true));
+    } catch (ex) {
       emit(state.copyWith(fetchStatus: AppStatus.error));
     }
   }

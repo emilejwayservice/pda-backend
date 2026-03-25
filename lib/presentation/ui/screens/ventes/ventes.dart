@@ -199,7 +199,8 @@ class _VentesScreenState extends State<VentesScreen> {
           ),
           itemBuilder: (context, index) {
             ProductEntity product = state.displayedProducts!.elementAt(index);
-            product.image_path = product_images.elementAt(index);
+            product.image_path =
+                product_images.elementAt(index % product_images.length);
             return MyGridTile(
               product: product,
               onSelectProduct: () {
