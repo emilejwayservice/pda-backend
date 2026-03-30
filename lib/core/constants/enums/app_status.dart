@@ -7,4 +7,5 @@ enum AppStatus{
   loading,
   infos,
   unknown,
+  initial
 }

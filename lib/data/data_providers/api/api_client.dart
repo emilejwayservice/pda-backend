@@ -14,6 +14,7 @@ import 'package:pda/data/models/livraison.dart';
 import 'package:pda/data/models/livraison_command_req.dart';
 import 'package:pda/data/models/payment_mode.dart';
 import 'package:pda/data/models/product.dart';
+import 'package:pda/data/models/reception_model.dart';
 import 'package:pda/data/models/retour.dart';
 import 'package:pda/data/models/tva.dart';
 import 'package:pda/data/models/type_client.dart';
@@ -64,6 +65,20 @@ abstract class ApiClient {
   Future<List<LivraisonModel>> getLivraisonsByClient(int client, int company);
   Future<RetourModel> livrerRetour(int id);
   Future<List<LivraisonModel>> getLivraisonsByDate(int company, String date);
+  Future<ReceptionModel> createReception(Map<String, dynamic> data);
+  Future<List<ReceptionModel>> getReceptions();
+  Future<ReceptionDetailModel> createReceptionDetail(
+      int receptionId, Map<String, dynamic> data);
+  Future<List<ReceptionDetailModel>> getReceptionDetails();
+  Future<List<ReceptionDetailModel>> getReceptionDetailsByReception(
+      int receptionId);
+  Future<List<FournisseurModel>> getFournisseurs();
+  Future<List<EntrepotReceptionModel>> getEntrepots(int idSociete);
+  Future<List<ArticleModel>> getArticles(int idSociete);
+  Future<List<BateauModel>> getBateaux();
+  Future<List<UniteModel>> getUnites();
+  Future<NextRefModel> getNextRef();
+  Future<ArticleUnitModel> getArticleUnit(int idArticle);
 }
 
 class ApiClientIml extends ApiClient {
@@ -928,8 +943,8 @@ class ApiClientIml extends ApiClient {
   Future<List<LivraisonModel>> getLivraisonsByDate(
       int company, String date) async {
     try {
-      var response = await _dio.get("/livraisons/by-date/$company",
-          queryParameters: {"date": date}); 
+      var response = await _dio
+          .get("/livraisons/by-date/$company", queryParameters: {"date": date});
       List<LivraisonModel> livraisons = await (response.data as List)
           .map((e) => LivraisonModel.fromMap(e))
           .toList();
@@ -947,6 +962,177 @@ class ApiClientIml extends ApiClient {
         throw ServerException(ex.response!.data);
       }
       rethrow;
+    }
+  }
+
+  @override
+  Future<ReceptionModel> createReception(Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.post('/receptions', data: data);
+      return ReceptionModel.fromJson(response.data);
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ReceptionModel>> getReceptions() async {
+    try {
+      final response = await _dio.get('/receptions');
+      return (response.data as List)
+          .map((e) => ReceptionModel.fromJson(e))
+          .toList();
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ReceptionDetailModel>> getReceptionDetailsByReception(
+      int receptionId) async {
+    try {
+      final response = await _dio.get('/reception-details/$receptionId');
+      return (response.data as List)
+          .map((e) => ReceptionDetailModel.fromJson(e))
+          .toList();
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ReceptionDetailModel> createReceptionDetail(
+      int receptionId, Map<String, dynamic> data) async {
+    try {
+      final response =
+          await _dio.post('/reception-details/$receptionId', data: data);
+      return ReceptionDetailModel.fromJson(response.data);
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ReceptionDetailModel>> getReceptionDetails() async {
+    try {
+      final response = await _dio.get('/reception-details');
+      return (response.data as List)
+          .map((e) => ReceptionDetailModel.fromJson(e))
+          .toList();
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<FournisseurModel>> getFournisseurs() async {
+    try {
+      final response = await _dio.get('/receptions/fournisseurs');
+      return (response.data as List)
+          .map((e) => FournisseurModel.fromJson(e))
+          .toList();
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<EntrepotReceptionModel>> getEntrepots(int idSociete) async {
+    try {
+      final response = await _dio.get(
+        '/receptions/entrepots',
+        queryParameters: {'idSociete': idSociete},
+      );
+      return (response.data as List)
+          .map((e) => EntrepotReceptionModel.fromJson(e))
+          .toList();
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ArticleModel>> getArticles(int idSociete) async {
+    try {
+      final response = await _dio.get(
+        '/reception-details/articles',
+        queryParameters: {'idSociete': idSociete},
+      );
+      return (response.data as List)
+          .map((e) => ArticleModel.fromJson(e))
+          .toList();
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<BateauModel>> getBateaux() async {
+    try {
+      final response = await _dio.get('/reception-details/bateaux');
+      return (response.data as List)
+          .map((e) => BateauModel.fromJson(e))
+          .toList();
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<UniteModel>> getUnites() async {
+    try {
+      final response = await _dio.get('/reception-details/unities');
+      return (response.data as List)
+          .map((e) => UniteModel.fromJson(e))
+          .toList();
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<NextRefModel> getNextRef() async {
+    try {
+      final response = await _dio.get('/receptions/next-ref');
+      return NextRefModel.fromJson(response.data);
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ArticleUnitModel> getArticleUnit(int idArticle) async {
+    try {
+      final response = await _dio.get('/receptions/$idArticle/unit');
+      return ArticleUnitModel.fromJson(response.data);
+    } on DioException catch (ex) {
+      _handleDioException(ex);
+      rethrow;
+    }
+  }
+
+  void _handleDioException(DioException ex) {
+    if (ex.error is SocketException ||
+        ex.type == DioExceptionType.connectionTimeout) {
+      throw NetworkConnectivityException();
+    }
+    if ((ex.response?.statusCode ?? 0) == 401 ||
+        (ex.response?.statusCode ?? 0) == 403) {
+      throw UnAuthenticatedException();
+    }
+    if ((ex.response?.statusCode ?? 0) == 400) {
+      throw ServerException(ex.response!.data);
     }
   }
 }

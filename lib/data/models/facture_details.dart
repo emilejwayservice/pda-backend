@@ -1,9 +1,7 @@
-
 import 'package:pda/data/models/product.dart';
-import 'package:pda/domain/entities/details.dart';
 import 'package:pda/domain/entities/facture_details.dart';
 
-class FactureDetailModel{
+class FactureDetailModel {
   int? id;
   int? quantity;
   double? price;
@@ -36,16 +34,18 @@ class FactureDetailModel{
 
   factory FactureDetailModel.fromJson(Map<String, dynamic> json) {
     return FactureDetailModel(
-      id: json['id'] ,
-      quantity: json['quantity'] ,
-      price: json['price'] ,
-      totalHt: json['totalHt'] ,
+      id: json['id'],
+      quantity: json['quantity'],
+      price: json['price'],
+      totalHt: json['totalHt'],
       totalTva: json['totalTva'],
-      totalTTC: json['totalTTc'] ,
-      product: json['product'] ==null?null:ProductModel.fromJson(json['product']),
+      totalTTC: json['totalTTc'],
+      product: json['product'] == null
+          ? null
+          : ProductModel.fromJson(json['product']),
     );
   }
-  FactureDetailEntity toEntity(){
+  FactureDetailEntity toEntity() {
     return FactureDetailEntity(
       totalTva: totalTva,
       totalTTC: totalTTC,
@@ -57,5 +57,3 @@ class FactureDetailModel{
     );
   }
 }
-
-
